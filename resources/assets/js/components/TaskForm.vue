@@ -5,8 +5,12 @@
             <div class="card-body">
                 <form action="./api/task" method="POST" @submit.prevent="addTask()">
                     <div class="form-group">
-                        <input type="text" name="title" placeholder="Task title" class="form-control" v-model="title">
+                        <input type="text" name="title" placeholder="Task title" class="form-control" v-model="title" :class="{'is-invalid': errors.get('title')}">
+                        <div class="invalid-feedback">
+                            {{ errors.get('title') }}
+                        </div>
                     </div>
+                    
                     <div class="form-group">
                         <input type="submit" value="Add Task" class="btn btn-info">
                     </div>
@@ -17,10 +21,29 @@
 </template>
 
 <script>
+
+    class Errors
+    {
+        constructor()
+        {
+            this.errors = {};
+        }
+        get(field)
+        {
+            if(this.errors[field]){
+                return this.errors[field][0];
+            }
+        }
+        set(errors)
+        {
+            this.errors = errors.errors;
+        }
+    }
     export default {
         data(){
             return {
-                title: ''
+                title: '',
+                errors: new Errors()
             }
         },
         mounted() {
@@ -28,13 +51,12 @@
         },
         methods: {
             addTask(){
+                let vm = this;
                 axios.post('./api/task', { title: this.title })
-                .then( function(){
+                .then(() =>{
                     Event.$emit( 'taskCreated', { title: this.title } );
                     this.title = '';
-                }).catch( function(){
-
-                });
+                }).catch( error => this.errors.set(error.response.data));
                
             }
         }

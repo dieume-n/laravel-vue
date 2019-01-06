@@ -47951,6 +47951,14 @@ module.exports = Component.exports
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+//
+//
+//
+//
 //
 //
 //
@@ -47970,10 +47978,36 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 
+
+var Errors = function () {
+    function Errors() {
+        _classCallCheck(this, Errors);
+
+        this.errors = {};
+    }
+
+    _createClass(Errors, [{
+        key: 'get',
+        value: function get(field) {
+            if (this.errors[field]) {
+                return this.errors[field][0];
+            }
+        }
+    }, {
+        key: 'set',
+        value: function set(errors) {
+            this.errors = errors.errors;
+        }
+    }]);
+
+    return Errors;
+}();
+
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
         return {
-            title: ''
+            title: '',
+            errors: new Errors()
         };
     },
     mounted: function mounted() {
@@ -47982,10 +48016,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     methods: {
         addTask: function addTask() {
+            var _this = this;
+
+            var vm = this;
             axios.post('./api/task', { title: this.title }).then(function () {
-                Event.$emit('taskCreated', { title: this.title });
-                this.title = '';
-            }).catch(function () {});
+                Event.$emit('taskCreated', { title: _this.title });
+                _this.title = '';
+            }).catch(function (error) {
+                return _this.errors.set(error.response.data);
+            });
         }
     }
 });
@@ -48026,6 +48065,7 @@ var render = function() {
                   }
                 ],
                 staticClass: "form-control",
+                class: { "is-invalid": _vm.errors.get("title") },
                 attrs: {
                   type: "text",
                   name: "title",
@@ -48040,7 +48080,15 @@ var render = function() {
                     _vm.title = $event.target.value
                   }
                 }
-              })
+              }),
+              _vm._v(" "),
+              _c("div", { staticClass: "invalid-feedback" }, [
+                _vm._v(
+                  "\n                        " +
+                    _vm._s(_vm.errors.get("title")) +
+                    "\n                    "
+                )
+              ])
             ]),
             _vm._v(" "),
             _vm._m(0)
