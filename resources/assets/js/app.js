@@ -8,6 +8,7 @@
 require('./bootstrap');
 
 window.Vue = require('vue');
+window.Event = new Vue();
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -16,6 +17,9 @@ window.Vue = require('vue');
  */
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
+
+Vue.component('task-form', require('./components/TaskForm.vue'));
+Vue.component('task-list', require('./components/TaskList.vue'));
 
 const app = new Vue({
     el: '#app'
